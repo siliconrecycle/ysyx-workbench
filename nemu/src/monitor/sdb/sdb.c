@@ -38,6 +38,9 @@ static int cmd_q(char *args) {
 }
 
 static int cmd_help(char *args);
+static int cmd_si(char *args);
+static int cmd_info(char *args);
+static int cmd_hex(char *args);
 
 static struct {
   const char *name;
@@ -49,8 +52,93 @@ static struct {
   { "q", "Exit NEMU", cmd_q },
 
   /* TODO: Add more commands */
-
+  { "si", "Step instruction", cmd_si },
+  { "info", "info register/watchpoint state", cmd_info },
+  { "x", "hex N vaddr", cmd_hex },
 };
+
+#include <memory/vaddr.h>
+#include <math.h>
+
+static word_t parse(char *cmd) {
+        char *str = cmd, c;
+
+        strsep(&str, "x");
+//        printf("%s\n", str);
+
+        int s = 0, len = strlen(str), i;
+        for (i = 0; len > 0; len--, i++) {
+                int r = 0;
+                c = str[i];
+//                printf("%c\n", c);
+                c = tolower(c);
+                if (isalpha(c) && c < 'g') {
+                        r += 9 + (c - 'a');
+                } else if (isdigit(c))
+                        r += (c - '0');
+                else {
+                        printf("unknow hex!\n");
+                        return 0x80000000;
+                }
+                r *= pow(16, len);
+                s += r;
+        }
+//        printf("%d\n", s);
+
+        return (word_t)s;
+}
+
+static int cmd_hex(char *args) {
+	int n = 1;
+	word_t addr, mem;
+
+	char *arg1 = strtok(NULL, " ");
+
+	if (arg1 == NULL) {
+		printf("unknown cmd1!\n");
+                return 0;
+        }
+	n = atoi(arg1);
+
+	char *arg2 = strtok(NULL, " ");
+	if (arg2 == NULL) {
+		printf("unknown cmd2!\n");
+                return 0;
+	}
+        addr = parse(arg2);
+
+        while (n-- > 0) {
+        	mem = vaddr_read(addr, 4);
+	        printf( "0x%016lx\t0x%08lx\n", addr, mem);
+                addr += 4;
+        }
+	return 0;
+}
+
+static int cmd_info(char *args) {
+	char *arg = strtok(NULL, " ");
+	if (arg == NULL) {
+		printf("unknown cmd!\n");
+		return 0;
+	}
+	if (strcmp(arg, "r") == 0) {
+//		printf("%s\n", arg);
+		isa_reg_display();
+	} else if (strcmp(arg, "w") == 0)
+		printf("%s\n", arg);
+	else
+		printf("unknown cmd!\n");
+	return 0;
+}
+
+static int cmd_si(char *args) {
+	int step = 1;
+	char *arg = strtok(NULL, " ");
+	if (arg != NULL)
+		step = atoi(arg);
+	cpu_exec(step);
+	return 0;
+}
 
 #define NR_CMD ARRLEN(cmd_table)
 
