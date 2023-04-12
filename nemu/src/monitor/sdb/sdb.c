@@ -41,6 +41,7 @@ static int cmd_help(char *args);
 static int cmd_si(char *args);
 static int cmd_info(char *args);
 static int cmd_hex(char *args);
+static int cmd_expr(char *args);
 
 static struct {
   const char *name;
@@ -55,7 +56,27 @@ static struct {
   { "si", "Step instruction", cmd_si },
   { "info", "info register/watchpoint state", cmd_info },
   { "x", "hex N vaddr", cmd_hex },
+  { "p", "p [exprt]: 计算表达式。", cmd_expr },
 };
+
+static int cmd_expr(char *args) {
+	bool ok = false;
+	bool *okp = &ok;
+
+	char str[1000] = {}, *arg;
+	
+	while ((arg = strtok(NULL, " ")) > 0) {
+		/* printf("cmd_expr: arg: <%s>\n", arg); */
+		strcat(str, arg);
+	}
+	printf("cmd_expr: str: <%s>\n", str);
+
+	expr(str, okp);
+	if (!*okp)
+		printf("cmd_expr: error: expr\n");
+
+	return 0;
+}
 
 #include <memory/vaddr.h>
 #include <math.h>

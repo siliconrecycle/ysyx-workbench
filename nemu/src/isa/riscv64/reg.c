@@ -9,7 +9,7 @@ const char *regs[] = {
 };
 
 void isa_reg_display(void) {
-	printf("isa display!\n");
+	printf("demu: isa display!\n");
 	int i;
 	for (i = 0; i < 32; i++)
 		printf("%s:\t%ld\n", reg_name(i, 32), gpr(i));

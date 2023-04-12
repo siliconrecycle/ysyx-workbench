@@ -6,10 +6,10 @@
 #include <regex.h>
 
 enum {
-  TK_NOTYPE = 256, TK_EQ,
+	TK_NOTYPE = 256, TK_EQ, TK_NUM, TK_PLUS, TK_MINUS, TK_MUL, TK_DIV,
 
-  /* TODO: Add more token types */
-
+	/* TODO: Add more token types */
+	TK_LEFT, TK_RIGHT,
 };
 
 static struct rule {
@@ -21,9 +21,15 @@ static struct rule {
    * Pay attention to the precedence level of different rules.
    */
 
-  {" +", TK_NOTYPE},    // spaces
-  {"\\+", '+'},         // plus
+  {" ", TK_NOTYPE},    // spaces
+  {"\\+", TK_PLUS},         // plus
   {"==", TK_EQ},        // equal
+  {"[0-9][^+-\\*\\/\\(\\)]*", TK_NUM},        // 数字
+  {"\\-", TK_MINUS},        // 减
+  {"\\*", TK_MUL},        // 乘
+  {"\\/", TK_DIV},        // 除
+  {"\\(", TK_LEFT},        // 左括号
+  {"\\)", TK_RIGHT},        // 右括号
 };
 
 #define NR_REGEX ARRLEN(rules)
@@ -64,7 +70,7 @@ static bool make_token(char *e) {
 
   while (e[position] != '\0') {
     /* Try all rules one by one. */
-    for (i = 0; i < NR_REGEX; i ++) {
+    for (i = 0; i < NR_REGEX; i++) {
       if (regexec(&re[i], e + position, 1, &pmatch, 0) == 0 && pmatch.rm_so == 0) {
         char *substr_start = e + position;
         int substr_len = pmatch.rm_eo;
@@ -79,8 +85,54 @@ static bool make_token(char *e) {
          * of tokens, some extra actions should be performed.
          */
 
+	Token t = {0, ""};
+	t.type = rules[i].token_type;
+	strncpy(t.str, substr_start, substr_len);
+	
         switch (rules[i].token_type) {
-          default: TODO();
+	case TK_PLUS:
+	  printf("make_token: <%s>\n", substr_start);
+	  tokens[nr_token++] = t;
+	  printf("make_token: tokens[%d] = <%s>\n", nr_token - 1, tokens[nr_token - 1].str);
+	  break;
+	case TK_MINUS:
+	  printf("make_token: <%s>\n", substr_start);
+	  tokens[nr_token++] = t;
+	  printf("make_token: tokens[%d] = <%s>\n", nr_token - 1, tokens[nr_token - 1].str);
+	  break;
+	case TK_MUL:
+	  printf("make_token: <%s>\n", substr_start);
+	  tokens[nr_token++] = t;
+	  printf("make_token: tokens[%d] = <%s>\n", nr_token - 1, tokens[nr_token - 1].str);
+	  break;
+	case TK_DIV:
+	  printf("make_token: <%s>\n", substr_start);
+	  tokens[nr_token++] = t;
+	  printf("make_token: tokens[%d] = <%s>\n", nr_token - 1, tokens[nr_token - 1].str);
+	  break;
+	case TK_LEFT:
+	  printf("make_token: <%s>\n", substr_start);
+	  tokens[nr_token++] = t;
+	  printf("make_token: tokens[%d] = <%s>\n", nr_token - 1, tokens[nr_token - 1].str);
+	  break;
+	case TK_RIGHT:
+	  printf("make_token: <%s>\n", substr_start);
+	  tokens[nr_token++] = t;
+	  printf("make_token: tokens[%d] = <%s>\n", nr_token - 1, tokens[nr_token - 1].str);
+	  break;
+	case TK_NOTYPE:
+	  printf("make_token: <%s>\n", substr_start);
+	  tokens[nr_token++] = t;
+	  printf("make_token: tokens[%d] = <%s>\n", nr_token - 1, tokens[nr_token - 1].str);
+	  break;
+	case TK_NUM:
+	  printf("make_token: <%s>\n", substr_start);
+	  tokens[nr_token++] = t;
+	  printf("make_token: tokens[%d] = <%s>\n", nr_token - 1, tokens[nr_token - 1].str);
+	  break;
+	default:
+	  printf("error: unknown operator!\n");
+	  break;
         }
 
         break;
@@ -89,6 +141,7 @@ static bool make_token(char *e) {
 
     if (i == NR_REGEX) {
       printf("no match at position %d\n%s\n%*.s^\n", position, e, position, "");
+
       return false;
     }
   }
@@ -96,6 +149,11 @@ static bool make_token(char *e) {
   return true;
 }
 
+void prftokens(Token t) {
+	printf("token: [");
+	printf("type: %d, str: %s", t.type, t.str);
+	printf("]\n");
+}
 
 word_t expr(char *e, bool *success) {
   if (!make_token(e)) {
@@ -104,7 +162,12 @@ word_t expr(char *e, bool *success) {
   }
 
   /* TODO: Insert codes to evaluate the expression. */
-  TODO();
+
+  printf("num: %ld / %ld\n", sizeof(tokens), sizeof(Token));
+  for (int i = 0; i < 32; i++)
+	  prftokens(tokens[i]);
+    
+  /* TODO(); */
 
   return 0;
 }
