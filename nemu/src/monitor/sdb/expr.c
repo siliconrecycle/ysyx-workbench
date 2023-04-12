@@ -155,6 +155,22 @@ void prftokens(Token t) {
 	printf("]\n");
 }
 
+int checkparenthesis(int s, int e) {
+	TODO();
+}
+
+word_t eval(int s, int e) {
+	if (s > e)
+		return;
+	else if (s == e)
+		return tokens[e];
+	else {
+		int checkpth = checkparenthesis(s, e);
+		if (checkpth == 1)
+			eval(s + 1, e - 1);
+		else if (checkpth == 0)
+			
+
 word_t expr(char *e, bool *success) {
   if (!make_token(e)) {
     *success = false;
@@ -163,11 +179,21 @@ word_t expr(char *e, bool *success) {
 
   /* TODO: Insert codes to evaluate the expression. */
 
-  printf("num: %ld / %ld\n", sizeof(tokens), sizeof(Token));
-  for (int i = 0; i < 32; i++)
-	  prftokens(tokens[i]);
-    
-  /* TODO(); */
+  int i, r;
 
+  // 1. get the number of tokens.
+  printf("num: %ld / %ld\n", sizeof(tokens), sizeof(Token));
+  for (i = 0; i < 32; i++) {
+	  prftokens(tokens[i]);
+	  if ((tokens[i].type != TK_NUM) && (tokens[i].type != TK_PLUS)
+	      && (tokens[i].type != TK_MINUS) && (tokens[i].type != TK_MUL)
+	      && (tokens[i].type != TK_DIV))
+		  break;
+  }
+  printf("expr: num of token: <%d>\n", i);
+
+  // 2. eval(start, end) of the expr.
+  r = eval(0, i);
+  
   return 0;
 }
