@@ -159,41 +159,67 @@ int checkparenthesis(int s, int e) {
 	TODO();
 }
 
-word_t eval(int s, int e) {
-	if (s > e)
-		return;
-	else if (s == e)
-		return tokens[e];
-	else {
-		int checkpth = checkparenthesis(s, e);
-		if (checkpth == 1)
-			eval(s + 1, e - 1);
-		else if (checkpth == 0)
-			
+/* word_t eval(int s, int e) { */
+/* 	if (s > e) */
+/* 		return; */
+/* 	else if (s == e) */
+/* 		return tokens[e]; */
+/* 	else { */
+/* 		int checkpth = checkparenthesis(s, e); */
+/* 		if (checkpth == 1) */
+/* 			eval(s + 1, e - 1); */
+/* 		else if (checkpth > 1 || checkpth == 0) { */
+/* 			TODO(); */
+/* 		} else if (checkpth < 0) */
+/* 			printf("error: expr: ( or )"); */
+/* 	} */
+/* } */
 
+word_t pair(int n, int s, int e) {
+	// 1. 表达式不包含括号。
+	if (n < 0)
+		return s;
+	int i = 0;
+	for (i = 0; i <= e && (tokens[i].type != TK_LEFT) && (tokens[i].type != TK_RIGHT); i++) {
+		if (i == e) {
+			printf("pair: <i: %d>\n", i);
+			return s;
+		}
+	}
+
+	// 2.表达式包含左括号。
+	
+	return -1;
+}
+		
+	
 word_t expr(char *e, bool *success) {
-  if (!make_token(e)) {
-    *success = false;
-    return 0;
-  }
+	if (!make_token(e)) {
+		*success = false;
+		return 0;
+	}
 
-  /* TODO: Insert codes to evaluate the expression. */
+	/* TODO: Insert codes to evaluate the expression. */
 
-  int i, r;
+	int i;
 
-  // 1. get the number of tokens.
-  printf("num: %ld / %ld\n", sizeof(tokens), sizeof(Token));
-  for (i = 0; i < 32; i++) {
-	  prftokens(tokens[i]);
-	  if ((tokens[i].type != TK_NUM) && (tokens[i].type != TK_PLUS)
-	      && (tokens[i].type != TK_MINUS) && (tokens[i].type != TK_MUL)
-	      && (tokens[i].type != TK_DIV))
-		  break;
-  }
-  printf("expr: num of token: <%d>\n", i);
+	// 1. get the number of tokens.
+	printf("num: %ld / %ld\n", sizeof(tokens), sizeof(Token));
+	for (i = 0; i < 32; i++) {
+		prftokens(tokens[i]);
+		if ((tokens[i].type != TK_NUM) && (tokens[i].type != TK_PLUS)
+		    && (tokens[i].type != TK_MINUS) && (tokens[i].type != TK_MUL)
+		    && (tokens[i].type != TK_DIV))
+			break;
+	}
+	printf("expr: num of token: <%d>\n", i);
 
-  // 2. eval(start, end) of the expr.
-  r = eval(0, i);
-  
-  return 0;
+	// 2. eval(start, end) of the expr.
+	/* r = eval(0, i); */
+
+	int num = 0, pth = 0;
+	num = pair(pth, 0, i);
+	printf("expr: <num: %d>, <pth: %d>\n", num, pth);
+	
+	return 0;
 }
