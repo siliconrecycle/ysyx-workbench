@@ -176,7 +176,7 @@ int checkparenthesis(int s, int e) {
 /* } */
 
 word_t pair(int n, int s, int e) {
-	// 1. 表达式不包含括号。
+	// 1.表达式不包含括号。
 	if (n < 0)
 		return s;
 	int i = 0;
@@ -188,7 +188,26 @@ word_t pair(int n, int s, int e) {
 	}
 
 	// 2.表达式包含左括号。
-	
+	if (tokens[i].type == TK_LEFT) {
+		int r = 0, a;
+		a = n + 0.4;
+		r = pair(a, i, e);
+		if (a < 0 || a == n) {
+			n = -1;
+			return r;
+		}
+	}
+
+	// 3.表达式包含右括号。
+	if (tokens[i].type == TK_RIGHT) {
+		if (n == 0 || n != 0.4) {
+			n = -1;
+			return i;
+		}
+		n += 0.6;
+		pair(n, i, e);
+	}
+			
 	return -1;
 }
 		
