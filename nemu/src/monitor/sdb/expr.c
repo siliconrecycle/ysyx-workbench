@@ -175,40 +175,45 @@ int checkparenthesis(int s, int e) {
 /* 	} */
 /* } */
 
-word_t pair(int n, int s, int e) {
+word_t pair(double *n, int s, int e) {
 	// 1.表达式不包含括号。
-	if (n < 0)
+	if (*n < 0)
 		return s;
-	int i = 0;
-	for (i = 0; i <= e && (tokens[i].type != TK_LEFT) && (tokens[i].type != TK_RIGHT); i++) {
-		if (i == e) {
-			printf("pair: <i: %d>\n", i);
-			return s;
-		}
+	int i = s;
+	for (i = s; i <= e && (tokens[i].type != TK_LEFT) && (tokens[i].type != TK_RIGHT); i++)
+		;
+	if (i > e) {
+		printf("pair: <i: %d>\n", i);
+		return i;
 	}
 
 	// 2.表达式包含左括号。
 	if (tokens[i].type == TK_LEFT) {
-		int r = 0, a;
-		a = n + 0.4;
-		r = pair(a, i, e);
-		if (a < 0 || a == n) {
-			n = -1;
+		int r = 0;
+		double a = 0;
+		double *b = &a;
+		*b = *n + 0.4;
+		
+		r = pair(b, i + 1, e);
+		if (*b < 0 || *b == *n) {
+			*n = -1;
 			return r;
 		}
+		*n = *b;
 	}
 
 	// 3.表达式包含右括号。
 	if (tokens[i].type == TK_RIGHT) {
-		if (n == 0 || n != 0.4) {
-			n = -1;
+		if (*n == 0 || *n != 0.4) {
+			*n = -1;
 			return i;
 		}
-		n += 0.6;
-		pair(n, i, e);
+		*n += 0.6;
+		
+		pair(n, i + 1, e);
 	}
 			
-	return -1;
+	return i;
 }
 		
 	
@@ -228,7 +233,8 @@ word_t expr(char *e, bool *success) {
 		prftokens(tokens[i]);
 		if ((tokens[i].type != TK_NUM) && (tokens[i].type != TK_PLUS)
 		    && (tokens[i].type != TK_MINUS) && (tokens[i].type != TK_MUL)
-		    && (tokens[i].type != TK_DIV))
+		    && (tokens[i].type != TK_DIV) && (tokens[i].type != TK_LEFT)
+		    && (tokens[i].type != TK_RIGHT))
 			break;
 	}
 	printf("expr: num of token: <%d>\n", i);
@@ -236,9 +242,15 @@ word_t expr(char *e, bool *success) {
 	// 2. eval(start, end) of the expr.
 	/* r = eval(0, i); */
 
-	int num = 0, pth = 0;
-	num = pair(pth, 0, i);
-	printf("expr: <num: %d>, <pth: %d>\n", num, pth);
-	
+	int num = 0;
+	double p = 0.0;
+	double *pth = &p;
+	num = pair(pth, 0, i - 1);
+	printf("expr: <num: %d>, <pth: %f>\n", num, *pth);
+
+	Token t = { 0, "" };
+	for (i = 0; i < 32; i++) {
+		tokens[i] = t;
+	}
 	return 0;
 }

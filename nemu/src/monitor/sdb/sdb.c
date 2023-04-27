@@ -64,7 +64,7 @@ static int cmd_expr(char *args) {
 	bool *okp = &ok;
 
 	char str[1000] = {}, *arg;
-	
+
 	while ((arg = strtok(NULL, " ")) > 0) {
 		/* printf("cmd_expr: arg: <%s>\n", arg); */
 		strcat(str, arg);
