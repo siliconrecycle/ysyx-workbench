@@ -3,7 +3,7 @@ STUNAME = YiMing Qian
 
 # DO NOT modify the following code!!!
 
-TRACER = tracer-ysyx2204
+TRACER = tracer-ysyx
 GITFLAGS = -q --author='$(TRACER) <tracer@ysyx.org>' --no-verify --allow-empty
 
 YSYX_HOME = $(NEMU_HOME)/..
@@ -15,7 +15,7 @@ LOCK_DIR = $(YSYX_HOME)/.git/
 
 # prototype: git_soft_checkout(branch)
 define git_soft_checkout
-	git checkout --detach -q && git reset --soft $(1) -q && git checkout $(1) -q
+	git checkout --detach -q && git reset --soft $(1) -q -- && git checkout $(1) -q --
 endef
 
 # prototype: git_commit(msg)
